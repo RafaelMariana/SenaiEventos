@@ -31,5 +31,14 @@ public class UsuarioResource {
         UsuarioDTO usuario = usuarioService.deletarUsuario(id);
         return ResponseEntity.ok(usuario);
     }
+    @PutMapping()
+    public ResponseEntity<UsuarioDTO> atualizarUsuario(@RequestBody UsuarioDTO usuarioDTO){
+        return ResponseEntity.ok(usuarioService.atualizarUsuario(usuarioDTO));
+    }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<UsuarioDTO> buscarUsuarioPorEmail(@RequestParam String email){
+        return ResponseEntity.ok(usuarioService.buscarUsuarioPorEmail(email));
+    }
 
 }

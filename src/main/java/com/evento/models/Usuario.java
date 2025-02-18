@@ -22,7 +22,8 @@ public class Usuario {
     private String perfil;
     private boolean verificado;
 
-    public Usuario() {}
+    public Usuario() {
+    }
 
     public Usuario(Long id, String nome, String email, String senha, String cpf, Date dataNascimento, String perfil,
                    boolean verificado) {
@@ -107,8 +108,4 @@ public class Usuario {
         return Objects.equals(id, usuario.id);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
-    }
 }
