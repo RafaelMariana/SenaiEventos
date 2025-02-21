@@ -11,10 +11,28 @@ import java.util.Objects;
 
 @Service
 public class UsuarioService {
+    private static final String MSG_EMAIL = "Usuário já cadastrado com email: %s.";
+    private static final String MSG_CPF = "Usuário já cadastrado com cpf: %s.";
     @Autowired
     UsuarioRepository usuarioRepository;
 
     public UsuarioDTO cadastrarUsuario(UsuarioDTO usuarioDTO){
+        Usuario usuarioemail = usuarioRepository.findByEmail(usuarioDTO.getEmail());
+
+        Usuario usuarioEmail = usuarioRepository
+                .findByEmail(usuarioDTO.getEmail());
+
+        if (Objects.nonNull(usuarioEmail)){
+            throw new BussinesException(
+                    String.format(MSG_EMAIL,usuarioDTO.getEmail()));
+
+        }
+        Usuario usuarioCpf = usuarioRepository.findByCpf(usuarioDTO.getCpf());
+
+        if (Objects.nonNull(usuarioCpf)){
+            throw new BussinesException( String.format(MSG_CPF,usuarioDTO.getCpf()));
+        }
+
         Usuario usuario = converterUsuarioDTOParaUsuario(usuarioDTO);
         usuario = usuarioRepository.save(usuario);
         return converterUsuarioParaUsuarioDTO(usuario);
@@ -45,7 +63,6 @@ public class UsuarioService {
         usuario.setVerificado(usuarioDTO.isVerificado());
         return usuario;
 
-
     }
 
     public UsuarioDTO deletarUsuario(Long id) {
@@ -55,7 +72,7 @@ public class UsuarioService {
     }
 
     public UsuarioDTO buscarUsuarioPorId(Long id) {
-        Usuario usuario = usuarioRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("Usuário não encontrado"));
+        Usuario usuario = usuarioRepository.findById(id).orElseThrow(()-> new BussinesException("Usuário não encontrado"));
         return converterUsuarioParaUsuarioDTO(usuario);
 
     }
@@ -76,4 +93,5 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findByEmail(email);
         return converterUsuarioParaUsuarioDTO(usuario);
     }
+
 }
