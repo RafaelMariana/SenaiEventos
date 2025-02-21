@@ -1,10 +1,13 @@
 package com.evento.services;
 
 import com.evento.dtos.UsuarioDTO;
+import com.evento.exception.BussinesException;
 import com.evento.models.Usuario;
 import com.evento.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 public class UsuarioService {
@@ -54,9 +57,14 @@ public class UsuarioService {
     public UsuarioDTO buscarUsuarioPorId(Long id) {
         Usuario usuario = usuarioRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("Usuário não encontrado"));
         return converterUsuarioParaUsuarioDTO(usuario);
+
     }
 
     public UsuarioDTO atualizarUsuario(UsuarioDTO usuarioDTO) {
+
+        if(Objects.isNull(usuarioDTO.getId())){
+            throw new BussinesException("Id não pode ser nulo");
+        }
         Usuario usuario = usuarioRepository.findById(usuarioDTO.getId()).orElseThrow(() -> new
                 IllegalArgumentException("Usuário não encontrado"));
         usuario = converterUsuarioDTOParaUsuario(usuarioDTO);
