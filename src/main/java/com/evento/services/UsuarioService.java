@@ -4,34 +4,29 @@ import com.evento.dtos.UsuarioDTO;
 import com.evento.exception.BussinesException;
 import com.evento.models.Usuario;
 import com.evento.repositories.UsuarioRepository;
+import com.evento.specs.UsuarioSpec;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
+import static java.util.Objects.nonNull;
+
 @Service
 public class UsuarioService {
-    private static final String MSG_EMAIL = "Usuário já cadastrado com email: %s.";
-    private static final String MSG_CPF = "Usuário já cadastrado com cpf: %s.";
+
     @Autowired
     UsuarioRepository usuarioRepository;
+    @Autowired
+    private UsuarioSpec usuarioSpec;
 
     public UsuarioDTO cadastrarUsuario(UsuarioDTO usuarioDTO){
-        Usuario usuarioemail = usuarioRepository.findByEmail(usuarioDTO.getEmail());
 
-        Usuario usuarioEmail = usuarioRepository
-                .findByEmail(usuarioDTO.getEmail());
+        Usuario emailExistente = usuarioRepository.findByEmail(usuarioDTO.getEmail());
+        usuarioSpec.verificarSeExisteUsuarioComEmailDuplicado(emailExistente);
 
-        if (Objects.nonNull(usuarioEmail)){
-            throw new BussinesException(
-                    String.format(MSG_EMAIL,usuarioDTO.getEmail()));
-
-        }
-        Usuario usuarioCpf = usuarioRepository.findByCpf(usuarioDTO.getCpf());
-
-        if (Objects.nonNull(usuarioCpf)){
-            throw new BussinesException( String.format(MSG_CPF,usuarioDTO.getCpf()));
-        }
+        Usuario cpfExistente = usuarioRepository.findByCpf(usuarioDTO.getCpf());
+        usuarioSpec.verificarSeExisteUsuarioComCpfDuplicado(cpfExistente);
 
         Usuario usuario = converterUsuarioDTOParaUsuario(usuarioDTO);
         usuario = usuarioRepository.save(usuario);
@@ -84,6 +79,13 @@ public class UsuarioService {
         }
         Usuario usuario = usuarioRepository.findById(usuarioDTO.getId()).orElseThrow(() -> new
                 IllegalArgumentException("Usuário não encontrado"));
+
+
+        if((!(usuario.getEmail().equals(usuarioDTO.getEmail())))
+                &&(nonNull(usuarioRepository.findByEmail(usuarioDTO.getEmail())))){
+            throw new BussinesException(String.format("Usuário já cadstrado com email: %s.", usuarioDTO.getEmail()));
+
+        }
         usuario = converterUsuarioDTOParaUsuario(usuarioDTO);
         usuarioRepository.save(usuario);
         return converterUsuarioParaUsuarioDTO(usuario);
