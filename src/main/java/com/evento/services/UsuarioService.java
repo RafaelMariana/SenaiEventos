@@ -10,10 +10,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
+
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Service
 public class UsuarioService {
+    private static final String MSG_ID= "Usuário já cadastrado com email: %s.";
+    private static final String MSG_USUARIO = "Usuário não encontrado";
 
     @Autowired
     UsuarioRepository usuarioRepository;
@@ -67,18 +71,19 @@ public class UsuarioService {
     }
 
     public UsuarioDTO buscarUsuarioPorId(Long id) {
-        Usuario usuario = usuarioRepository.findById(id).orElseThrow(()-> new BussinesException("Usuário não encontrado"));
+        Usuario usuario = usuarioRepository.findById(id).orElseThrow(()-> new BussinesException(MSG_ID));
         return converterUsuarioParaUsuarioDTO(usuario);
 
     }
 
     public UsuarioDTO atualizarUsuario(UsuarioDTO usuarioDTO) {
 
-        if(Objects.isNull(usuarioDTO.getId())){
-            throw new BussinesException("Id não pode ser nulo");
-        }
+
+        usuarioSpec.verificarCampoIdNulo(usuarioDTO.getId());
+
+
         Usuario usuario = usuarioRepository.findById(usuarioDTO.getId()).orElseThrow(() -> new
-                IllegalArgumentException("Usuário não encontrado"));
+                IllegalArgumentException(MSG_USUARIO));
 
 
         if((!(usuario.getEmail().equals(usuarioDTO.getEmail())))
@@ -86,6 +91,12 @@ public class UsuarioService {
             throw new BussinesException(String.format("Usuário já cadstrado com email: %s.", usuarioDTO.getEmail()));
 
         }
+
+        if ((!(usuario.getCpf().equals(usuarioDTO.getCpf())))
+                &&(nonNull(usuarioRepository.findByCpf(usuarioDTO.getCpf())))) {
+            throw new BussinesException(String.format("Usuário já cadstrado com CPF: %s.", usuarioDTO.getCpf()));
+        }
+
         usuario = converterUsuarioDTOParaUsuario(usuarioDTO);
         usuarioRepository.save(usuario);
         return converterUsuarioParaUsuarioDTO(usuario);
