@@ -1,13 +1,18 @@
 package com.evento.dtos;
 
+import com.evento.enums.Estado;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+
 public class CidadeDTO {
     private Long id;
     private String nome;
-    private String estado;
+    @Enumerated(EnumType.STRING)
+    private Estado estado;
 
     public CidadeDTO(){}
 
-    public CidadeDTO(Long id, String nome, String estado) {
+    public CidadeDTO(Long id, String nome, Estado estado) {
         this.id = id;
         this.nome = nome;
         this.estado = estado;
@@ -29,11 +34,11 @@ public class CidadeDTO {
         this.nome = nome;
     }
 
-    public String getEstado() {
+    public Estado getEstado() {
         return estado;
     }
 
-    public void setEstado(String estado) {
+    public void setEstado(Estado estado) {
         this.estado = estado;
     }
 }
