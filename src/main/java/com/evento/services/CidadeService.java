@@ -3,7 +3,6 @@ package com.evento.services;
 import com.evento.dtos.CidadeDTO;
 import com.evento.exception.BussinesException;
 import com.evento.models.Cidade;
-import com.evento.models.Usuario;
 import com.evento.repositories.CidadeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

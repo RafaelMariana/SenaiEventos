@@ -9,7 +9,10 @@ import com.evento.repositories.EnderecoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static com.evento.services.CidadeService.MSG_CIDADE;
+import java.util.Objects;
+
+import static java.util.Objects.isNull;
+
 
 @Service
 public class EnderecoService {
@@ -22,7 +25,7 @@ public class EnderecoService {
 
 
 
-    public EnderecoDTO cadastrarEnderec(EnderecoDTO enderecoDTO) {
+    public EnderecoDTO cadastrarEndereco(EnderecoDTO enderecoDTO) {
         Endereco endereco = converterEnderecoDTOParaEndereco(enderecoDTO);
         endereco = enderecoRepository.save(endereco);
         return converterEnderecoParaEnderecoDTO(endereco);
@@ -48,6 +51,9 @@ public class EnderecoService {
         enderecoDTO.setBairro(endereco.getBairro());
         enderecoDTO.setComplemento(endereco.getComplemento());
         enderecoDTO.setCidade(cidadeService.converterCidadeParaCidadeDTO(endereco.getCidade()));
+
+        CidadeDTO cidadeDTO  = cidadeService.buscarCidadePorId(endereco.getCidade().getId());
+        enderecoDTO.setCidade(cidadeDTO);
         return enderecoDTO;
     }
 
@@ -56,8 +62,30 @@ public class EnderecoService {
     }
     public EnderecoDTO buscarEnderecoPorId(Long id){
         Endereco endereco = enderecoRepository.findById(id).orElseThrow(() -> new BussinesException
-                ("Endereco nao encontrado");
+                ("Endereco nao encontrado"));
         return converterEnderecoParaEnderecoDTO(endereco);
+    }
+    public EnderecoDTO buscarEnderecoPorCep(String cep) {
+        Endereco endereco = enderecoRepository.findByCep(cep).orElseThrow(() ->
+                new BussinesException("Cep não encontrado"));
+        return converterEnderecoParaEnderecoDTO(endereco);
+    }
+    public EnderecoDTO atualizarEndereco(EnderecoDTO enderecoDTO){
+        if(isNull(enderecoDTO.getId())){
+            throw new BussinesException("Endereco nao encontrado");
+        }
+        if(isNull(enderecoDTO.getCidade()))
+            throw new BussinesException("Cidade não informada");
+        if(isNull(enderecoDTO.getCidade().getId())){
+            throw new BussinesException("Cidade nao encontrada");
+        }
+        enderecoRepository.findById(enderecoDTO.getId()).orElseThrow(()
+                -> new BussinesException("Endereco nao encontrado"));
+        cidadeService.buscarCidadePorId(enderecoDTO.getCidade().getId());
+        Endereco endereco = converterEnderecoDTOParaEndereco(enderecoDTO);
+        enderecoRepository.save(endereco);
+        return converterEnderecoParaEnderecoDTO(endereco);
+
     }
 
 
