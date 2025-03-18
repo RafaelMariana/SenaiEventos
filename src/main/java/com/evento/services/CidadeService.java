@@ -35,6 +35,7 @@ public class CidadeService {
         cidadeRepository.deleteById(id);
     }
 
+
     public CidadeDTO buscarCidadePorId(Long id){
         Cidade cidade = cidadeRepository.findById(id).orElseThrow(() -> new BussinesException(MSG_CIDADE));
         return converterCidadeParaCidadeDTO(cidade);

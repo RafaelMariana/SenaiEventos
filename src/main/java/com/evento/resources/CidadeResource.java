@@ -2,7 +2,6 @@ package com.evento.resources;
 
 import com.evento.dtos.CidadeDTO;
 import com.evento.services.CidadeService;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
